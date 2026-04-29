@@ -1,11 +1,11 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// Global DP table to reuse for printing
+
 vector<vector<int>> dp;
 string X, Y;
 
-// Validate DNA string
+
 bool isValidDNA(string s) {
     for (char c : s) {
         if (c != 'A' && c != 'T' && c != 'G' && c != 'C') {
@@ -15,7 +15,7 @@ bool isValidDNA(string s) {
     return true;
 }
 
-// Compute LCS
+
 pair<int, string> computeLCS() {
     int n = X.size(), m = Y.size();
     dp.assign(n + 1, vector<int>(m + 1, 0));
@@ -29,7 +29,7 @@ pair<int, string> computeLCS() {
         }
     }
 
-    // Reconstruct LCS
+  
     int i = n, j = m;
     string lcs = "";
 
@@ -48,7 +48,6 @@ pair<int, string> computeLCS() {
     return {dp[n][m], lcs};
 }
 
-// Print DP Table
 void printDPTable() {
     if (dp.empty()) {
         cout << "\n⚠️ Run comparison first!\n";
@@ -71,7 +70,7 @@ void printDPTable() {
     }
 }
 
-// Main Menu
+
 int main() {
     int choice;
 
