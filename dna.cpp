@@ -1,128 +1,65 @@
-#include <bits/stdc++.h>
-using namespace std;
+import tkinter as tk
+from tkinter import messagebox
 
+# Function to validate DNA sequence
+def is_valid_dna(seq):
+    for char in seq:
+        if char not in "ATGC":
+            return False
+    return True
 
-vector<vector<int>> dp;
-string X, Y;
+# Function to compare sequences
+def compare_sequences():
+    seq1 = entry_seq1.get().upper()
+    seq2 = entry_seq2.get().upper()
 
+    if not seq1 or not seq2:
+        messagebox.showerror("Error", "Please enter both sequences!")
+        return
 
-bool isValidDNA(string s) {
-    for (char c : s) {
-        if (c != 'A' && c != 'T' && c != 'G' && c != 'C') {
-            return false;
-        }
-    }
-    return true;
-}
+    if not is_valid_dna(seq1) or not is_valid_dna(seq2):
+        messagebox.showerror("Error", "DNA sequence must contain only A, T, G, C!")
+        return
 
+    min_len = min(len(seq1), len(seq2))
+    matches = 0
+    result_str = ""
 
-pair<int, string> computeLCS() {
-    int n = X.size(), m = Y.size();
-    dp.assign(n + 1, vector<int>(m + 1, 0));
+    for i in range(min_len):
+        if seq1[i] == seq2[i]:
+            matches += 1
+            result_str += f"{seq1[i]} "
+        else:
+            result_str += f"({seq1[i]}/{seq2[i]}) "
 
-    for (int i = 1; i <= n; i++) {
-        for (int j = 1; j <= m; j++) {
-            if (X[i - 1] == Y[j - 1])
-                dp[i][j] = 1 + dp[i - 1][j - 1];
-            else
-                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
-        }
-    }
+    match_percent = (matches / min_len) * 100
 
-  
-    int i = n, j = m;
-    string lcs = "";
+    output_text.delete("1.0", tk.END)
+    output_text.insert(tk.END, f"Matches: {matches}/{min_len}\n")
+    output_text.insert(tk.END, f"Match Percentage: {match_percent:.2f}%\n\n")
+    output_text.insert(tk.END, "Comparison:\n")
+    output_text.insert(tk.END, result_str)
 
-    while (i > 0 && j > 0) {
-        if (X[i - 1] == Y[j - 1]) {
-            lcs += X[i - 1];
-            i--; j--;
-        } else if (dp[i - 1][j] > dp[i][j - 1]) {
-            i--;
-        } else {
-            j--;
-        }
-    }
+# Create main window
+root = tk.Tk()
+root.title("DNA Sequence Matcher")
+root.geometry("500x400")
 
-    reverse(lcs.begin(), lcs.end());
-    return {dp[n][m], lcs};
-}
+# Labels and inputs
+tk.Label(root, text="Enter DNA Sequence 1:").pack(pady=5)
+entry_seq1 = tk.Entry(root, width=50)
+entry_seq1.pack()
 
-void printDPTable() {
-    if (dp.empty()) {
-        cout << "\n⚠️ Run comparison first!\n";
-        return;
-    }
+tk.Label(root, text="Enter DNA Sequence 2:").pack(pady=5)
+entry_seq2 = tk.Entry(root, width=50)
+entry_seq2.pack()
 
-    cout << "\nDP Table:\n\n   ";
-    for (char c : Y) cout << c << " ";
-    cout << "\n";
+# Compare button
+tk.Button(root, text="Compare", command=compare_sequences, bg="green", fg="white").pack(pady=10)
 
-    for (int i = 0; i < dp.size(); i++) {
-        if (i == 0) cout << " ";
-        else cout << X[i - 1];
+# Output box
+output_text = tk.Text(root, height=10, width=60)
+output_text.pack(pady=10)
 
-        cout << " ";
-        for (int j = 0; j < dp[0].size(); j++) {
-            cout << dp[i][j] << " ";
-        }
-        cout << "\n";
-    }
-}
-
-
-int main() {
-    int choice;
-
-    do {
-        cout << "\n===== DNA Sequence Matcher =====\n";
-        cout << "1. Compare DNA Sequences\n";
-        cout << "2. Show DP Table\n";
-        cout << "3. Exit\n";
-        cout << "Enter choice: ";
-        cin >> choice;
-
-        switch (choice) {
-
-        case 1: {
-            cout << "\nEnter DNA Sequence 1: ";
-            cin >> X;
-
-            cout << "Enter DNA Sequence 2: ";
-            cin >> Y;
-
-            if (!isValidDNA(X) || !isValidDNA(Y)) {
-                cout << "❌ Invalid DNA sequence! Use only A, T, G, C.\n";
-                break;
-            }
-
-            auto result = computeLCS();
-
-            int len = result.first;
-            string lcs = result.second;
-
-            double similarity = (2.0 * len) / (X.length() + Y.length()) * 100;
-
-            cout << "\n✅ LCS: " << lcs << endl;
-            cout << "Length: " << len << endl;
-            cout << "Similarity: " << similarity << "%\n";
-
-            break;
-        }
-
-        case 2:
-            printDPTable();
-            break;
-
-        case 3:
-            cout << "\nExiting...\n";
-            break;
-
-        default:
-            cout << "\nInvalid choice!\n";
-        }
-
-    } while (choice != 3);
-
-    return 0;
-}
+# Run app
+root.mainloop()
